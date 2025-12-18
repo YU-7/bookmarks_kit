@@ -11,13 +11,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'popup.html'),
+        search: resolve(__dirname, 'search.html'),
       },
       output: {
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'popup.html') {
-            return 'popup.html'
+          if (assetInfo.name === 'popup.html' || assetInfo.name === 'search.html') {
+            return '[name][extname]'
           }
           return 'assets/[name].[ext]'
         },

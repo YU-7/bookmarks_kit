@@ -5,7 +5,8 @@
   "description": "一个书签管理工具",
   "permissions": [
     "bookmarks",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "action": {
     "default_popup": "popup.html",
