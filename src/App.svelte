@@ -114,7 +114,6 @@
         bind:value={searchQuery}
         oninput={handleInput}
         onkeypress={handleKeyPress}
-        autofocus
         class="input variant-filled-surface w-full"
       />
       {#if isSearching}
@@ -190,10 +189,11 @@
 <style>
   .popup-container {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     padding: 0;
     overflow: hidden;
+    /* 移除 border-radius，侧边栏不需要圆角 */
   }
 </style>

@@ -12,12 +12,20 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, 'popup.html'),
         search: resolve(__dirname, 'search.html'),
+        sidepanel: resolve(__dirname, 'sidepanel.html'),
+        background: resolve(__dirname, 'src/background.ts'),
       },
       output: {
-        entryFileNames: 'assets/[name].js',
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'background' 
+            ? 'assets/[name].js' 
+            : 'assets/[name].js';
+        },
         chunkFileNames: 'assets/[name].js',
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'popup.html' || assetInfo.name === 'search.html') {
+          if (assetInfo.name === 'popup.html' || 
+              assetInfo.name === 'search.html' || 
+              assetInfo.name === 'sidepanel.html') {
             return '[name][extname]'
           }
           return 'assets/[name].[ext]'
