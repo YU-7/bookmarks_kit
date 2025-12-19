@@ -154,7 +154,7 @@
                   />
                 </div>
               {/if}
-              <div class="flex-1 min-w-0">
+              <div class="flex-1 min-w-0 overflow-hidden">
                 <h3
                   class="text-base font-medium text-surface-900 dark:text-surface-50 mb-1 truncate"
                   title={bookmark.title}
@@ -163,7 +163,7 @@
                 </h3>
                 {#if bookmark.url}
                   <p
-                    class="text-sm text-surface-500 truncate"
+                    class="text-sm text-surface-500 truncate break-all"
                     title={bookmark.url}
                   >
                     {bookmark.url}
@@ -194,6 +194,20 @@
     flex-direction: column;
     padding: 0;
     overflow: hidden;
-    /* 移除 border-radius，侧边栏不需要圆角 */
+    box-sizing: border-box;
+  }
+
+  /* 确保卡片不会超出容器 */
+  .popup-container .card {
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* 确保所有子元素都不会超出 */
+  .popup-container * {
+    max-width: 100%;
+    box-sizing: border-box;
   }
 </style>
