@@ -1,8 +1,8 @@
 import { mount } from 'svelte'
 import './app.css'
-import App from './App.svelte'
+import SidepanelPage from './SidepanelPage.svelte'
 
-const app = mount(App, {
+const app = mount(SidepanelPage, {
   target: document.getElementById('app')!,
 })
 
