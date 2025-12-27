@@ -5,9 +5,9 @@
   "description": "一个书签管理工具",
   "permissions": [
     "bookmarks",
-    "storage",
     "tabs",
-    "sidePanel"
+    "sidePanel",
+    "contextMenus"
   ],
   "action": {
     "default_icon": {

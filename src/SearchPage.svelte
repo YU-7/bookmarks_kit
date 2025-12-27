@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { DatabaseManager } from './lib/database';
+  import AddBookmarkDialog from './lib/AddBookmarkDialog.svelte';
+
   interface Bookmark {
     id: string;
     title: string;
@@ -10,6 +13,16 @@
   let searchResults: Bookmark[] = $state([]);
   let isSearching: boolean = $state(false);
   let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  let showAddDialog: boolean = $state(false);
+  let selectedBookmark: Bookmark | null = $state(null);
+  let dbManager = DatabaseManager.getInstance();
+
+  // 初始化数据库
+  $effect(() => {
+    dbManager.initialize().catch((error) => {
+      console.error('数据库初始化失败:', error);
+    });
+  });
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -80,6 +93,71 @@
     if (target) {
       target.style.display = "none";
     }
+  };
+
+  const handleAddBookmark = (bookmark: Bookmark) => {
+    selectedBookmark = bookmark;
+    showAddDialog = true;
+  };
+
+  const handleSaveBookmark = async (data: {
+    title: string;
+    url: string;
+    internalUrl: string;
+    iconUrl: string;
+    tags: string[];
+  }) => {
+    try {
+      await dbManager.initialize();
+      const bookmarkId = `bookmark_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const now = Math.floor(Date.now() / 1000);
+
+      // 保存书签
+      await dbManager.execute(
+        `INSERT INTO bookmarks (id, title, url, internal_url, icon_url, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          bookmarkId,
+          data.title,
+          data.url,
+          data.internalUrl || null,
+          data.iconUrl || null,
+          now,
+          now,
+        ]
+      );
+
+      // 保存标签
+      if (data.tags.length > 0) {
+        const tagOperations = [];
+        for (const tagName of data.tags) {
+          const tagId = `tag_${tagName.toLowerCase().replace(/\s+/g, '_')}`;
+          
+          // 确保标签存在
+          await dbManager.execute(
+            `INSERT OR IGNORE INTO tags (id, name, created_at) VALUES (?, ?, ?)`,
+            [tagId, tagName, now]
+          );
+          
+          // 关联书签和标签
+          await dbManager.execute(
+            `INSERT OR IGNORE INTO bookmark_tags (bookmark_id, tag_id) VALUES (?, ?)`,
+            [bookmarkId, tagId]
+          );
+        }
+      }
+
+      console.log('书签已保存:', bookmarkId);
+      alert('书签已保存！');
+    } catch (error) {
+      console.error('保存书签失败:', error);
+      throw error;
+    }
+  };
+
+  const handleCloseDialog = () => {
+    showAddDialog = false;
+    selectedBookmark = null;
   };
 </script>
 
@@ -227,7 +305,19 @@
                         书签
                       </span>
                     </div>
-                    <div>点击打开</div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        onclick={(e) => {
+                          e.stopPropagation();
+                          handleAddBookmark(bookmark);
+                        }}
+                        class="px-2 py-1 text-xs bg-primary-500 text-white rounded hover:bg-primary-600 transition"
+                        title="添加到数据库"
+                      >
+                        ➕ 添加
+                      </button>
+                      <span>点击打开</span>
+                    </div>
                   </div>
                 </div>
               {/if}
@@ -245,4 +335,12 @@
       {/if}
     </section>
   </div>
+
+  {#if showAddDialog && selectedBookmark}
+    <AddBookmarkDialog
+      bookmark={selectedBookmark}
+      onClose={handleCloseDialog}
+      onSave={handleSaveBookmark}
+    />
+  {/if}
 </main>

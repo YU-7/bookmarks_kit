@@ -4,10 +4,11 @@ import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'path'
 import { chromeExtensionReload } from './scripts/vite-plugin-chrome-reload'
 import { copyManifest } from './scripts/vite-plugin-copy-manifest'
+import { copySqlJs } from './scripts/vite-plugin-copy-sqljs'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte(), tailwindcss(), copyManifest(), chromeExtensionReload()],
+  plugins: [svelte(), tailwindcss(), copyManifest(), copySqlJs(), chromeExtensionReload()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
