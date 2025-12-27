@@ -2,9 +2,12 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'path'
+import { chromeExtensionReload } from './scripts/vite-plugin-chrome-reload'
+import { copyManifest } from './scripts/vite-plugin-copy-manifest'
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte(), tailwindcss()],
+  plugins: [svelte(), tailwindcss(), copyManifest(), chromeExtensionReload()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
